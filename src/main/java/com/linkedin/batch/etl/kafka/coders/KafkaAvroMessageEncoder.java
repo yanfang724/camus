@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 
 import com.linkedin.batch.etl.kafka.schemaregistry.SchemaDetails;
 import com.linkedin.batch.etl.kafka.schemaregistry.SchemaNotFoundException;
-import com.linkedin.batch.etl.kafka.schemaregistry.SchemaRegistry;
+import com.linkedin.batch.etl.kafka.schemaregistry.SchemaRegistryClient;
 import com.linkedin.batch.etl.kafka.schemaregistry.SchemaRegistryException;
 
 
@@ -29,7 +29,7 @@ public class KafkaAvroMessageEncoder
   private static final Logger        logger     =
                                                     Logger.getLogger(KafkaAvroMessageDecoder.class);
 
-  private final SchemaRegistry client;
+  private final SchemaRegistryClient client;
   private final Set<String>        cache;
  
   public KafkaAvroMessageEncoder()
@@ -37,7 +37,7 @@ public class KafkaAvroMessageEncoder
     this(null);
   }
 
-  public KafkaAvroMessageEncoder(SchemaRegistry client)
+  public KafkaAvroMessageEncoder(SchemaRegistryClient client)
   {
     this.client = client;
     this.cache = Collections.synchronizedSet(new HashSet<String>());

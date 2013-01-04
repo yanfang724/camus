@@ -3,9 +3,14 @@ package com.linkedin.batch.etl.kafka.common;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+
 import kafka.api.FetchRequest;
 import kafka.common.ErrorMapping;
+import kafka.javaapi.FetchResponse;
 import kafka.javaapi.consumer.SimpleConsumer;
 import kafka.javaapi.message.ByteBufferMessageSet;
 import kafka.message.Message;
@@ -57,7 +62,7 @@ public class KafkaReader {
 
 		// read data from queue
 		URI uri = kafkaRequest.getURI();
-		simpleConsumer = new SimpleConsumer(uri.getHost(), uri.getPort(), clientTimeout, fetchBufferSize);
+		simpleConsumer = new SimpleConsumer(uri.getHost(), uri.getPort(), clientTimeout, fetchBufferSize, null);
 		
 		fetch();
 
@@ -110,24 +115,73 @@ public class KafkaReader {
 	 * @return false if there's no more fetches
 	 * @throws IOException
 	 */
-	public boolean fetch() throws IOException {
-		if (currentOffset >= lastOffset)
-			return false;
+	public boolean fetch() throws IOException
+	  {
+	    if (currentOffset >= lastOffset)
+	    {
+	      return false;
+	    }
 
-		FetchRequest fetchRequest = new FetchRequest(kafkaRequest.getTopic(), kafkaRequest.getPartition(), currentOffset, fetchBufferSize);
-		long tempTime = System.currentTimeMillis();
-		ByteBufferMessageSet messageBuffer = simpleConsumer.fetch(fetchRequest);
-		lastFetchTime = (System.currentTimeMillis() - tempTime);
-		totalFetchTime += lastFetchTime;
+	    long tempTime = System.currentTimeMillis();
+	    FetchResponse fetchResponse = null;
+	    int retries = 2;
+	    while (true && retries > 0)
+	    {
+	      KafkaClient kafkaClient = new KafkaClient();
+	      fetchResponse =
+	          kafkaClient.getFetchRequests(simpleConsumer,
+	                                       kafkaRequest.getTopic(),
+	                                       kafkaRequest.getPartition(),
+	                                       Integer.parseInt(kafkaRequest.getNodeId()),
+	                                       currentOffset,
+	                                       fetchBufferSize);
+	      if (fetchResponse.hasError())
+	      {
+	        ArrayList<String> topic = new ArrayList<String>();
+	        topic.add(kafkaRequest.getTopic());
+	        HashMap<String, List<EtlRequest>> response = KafkaClient.loadKafkaMetadata(topic);
+	        List<EtlRequest> requests = response.get(kafkaRequest.getTopic());
+	        for (EtlRequest request : requests)
+	        {
+	          if (request.getPartition() == kafkaRequest.getPartition())
+	          {
+	            kafkaRequest.setNodeId(request.getNodeId());
+	            kafkaRequest.setURI(request.getURI());
+	          }
+	        }
+	        retries--;
+	      }
+	      else
+	      {
+	        break;
+	      }
+	    }
+	    if (fetchResponse.hasError())
+	    {
+	      // What needs to be done here?
+	      System.err.println("Issue in getting getch requests for topic "
+	          + kafkaRequest.getTopic() + " and partition : " + kafkaRequest.getPartition());
+	    }
 
-		if (!hasError(messageBuffer)) {
-			messageIter = messageBuffer.iterator();
-			return true;
-		} else {
-			return false;
-		}
+	    ByteBufferMessageSet messageBuffer = null;
 
-	}
+	    messageBuffer =
+	        fetchResponse.messageSet(kafkaRequest.getTopic(), kafkaRequest.getPartition());
+	    lastFetchTime = (System.currentTimeMillis() - tempTime);
+	    totalFetchTime += lastFetchTime;
+
+	    if (!hasError(fetchResponse.errorCode(kafkaRequest.getTopic(),
+	                                          kafkaRequest.getPartition())))
+	    {
+	      messageIter = messageBuffer.iterator();
+	      return true;
+	    }
+	    else
+	    {
+	      return false;
+	    }
+
+	  }
 
 	/**
 	 * Closes this context
@@ -144,29 +198,38 @@ public class KafkaReader {
 	 * Called by the default implementation of {@link #map} to check error code
 	 * to determine whether to continue.
 	 */
-	private boolean hasError(ByteBufferMessageSet messages) throws IOException {
-		int errorCode = messages.getErrorCode();
+	private boolean hasError(Short errorCode) throws IOException
+	  {
 
-		if (errorCode == ErrorMapping.OffsetOutOfRangeCode()) {
-			// offset cannot cross the maximum offset (guaranteed by Kafka
-			// protocol).
-			// Kafka server may delete old files from time to time
-			if (currentOffset != kafkaRequest.getEarliestOffset()) {
-				// get the current offset range
-				currentOffset = kafkaRequest.getEarliestOffset();
-				return false;
-			}
-			throw new IOException(kafkaRequest + " earliest offset=" + currentOffset + " : invalid offset.");
-		} else if (errorCode == ErrorMapping.InvalidMessageCode()) {
-			throw new IOException(kafkaRequest + " current offset=" + currentOffset + " : invalid offset.");
-		} else if (errorCode == ErrorMapping.WrongPartitionCode()) {
-			throw new IOException(kafkaRequest + " : wrong partition");
-		} else if (errorCode != ErrorMapping.NoError()) {
-			throw new IOException(kafkaRequest + " current offset=" + currentOffset + " error:" + errorCode);
-		} else {
-			return false;
-		}
-	}
+	    if (errorCode == ErrorMapping.OffsetOutOfRangeCode())
+	    {
+	      // offset cannot cross the maximum offset (guaranteed by Kafka
+	      // protocol).
+	      // Kafka server may delete old files from time to time
+	      if (currentOffset != kafkaRequest.getEarliestOffset())
+	      {
+	        // get the current offset range
+	        currentOffset = kafkaRequest.getEarliestOffset();
+	        return false;
+	      }
+	      throw new IOException(kafkaRequest + " earliest offset=" + currentOffset
+	          + " : invalid offset.");
+	    }
+	    else if (errorCode == ErrorMapping.InvalidMessageCode())
+	    {
+	      throw new IOException(kafkaRequest + " current offset=" + currentOffset
+	          + " : invalid offset.");
+	    }
+	    else if (errorCode != ErrorMapping.NoError())
+	    {
+	      throw new IOException(kafkaRequest + " current offset=" + currentOffset + " error:"
+	          + errorCode);
+	    }
+	    else
+	    {
+	      return false;
+	    }
+	  }
 
 	/**
 	 * Returns the total bytes that will be fetched. This is calculated by

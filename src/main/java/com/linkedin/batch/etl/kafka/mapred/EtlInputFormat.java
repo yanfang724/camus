@@ -33,7 +33,7 @@ import com.linkedin.batch.etl.kafka.common.EtlKey;
 import com.linkedin.batch.etl.kafka.common.EtlRequest;
 import com.linkedin.batch.etl.kafka.common.EtlZkClient;
 import com.linkedin.batch.etl.kafka.schemaregistry.SchemaDetails;
-import com.linkedin.batch.etl.kafka.schemaregistry.SchemaRegistry;
+import com.linkedin.batch.etl.kafka.schemaregistry.SchemaRegistryClient;
 
 /**
  * Input format for a Kafka pull job.
@@ -96,7 +96,7 @@ public class EtlInputFormat extends InputFormat<EtlKey, AvroWrapper<Object>>
       //Get the class name of the concrete implementation of the Schema Registry and get the concrete class implemented
       
       String registryType = EtlInputFormat.getSchemaRegistryType(context);
-      SchemaRegistry registry = (SchemaRegistry)Class.forName(registryType).newInstance(); 
+      SchemaRegistryClient registry = (SchemaRegistryClient)Class.forName(registryType).newInstance(); 
  
       //SchemaRepository registry = SchemaRegistryClient.getInstance(context);
       requests = new ArrayList<EtlRequest>();

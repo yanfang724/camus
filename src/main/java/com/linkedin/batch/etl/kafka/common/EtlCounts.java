@@ -15,8 +15,10 @@ import java.util.Properties;
 import java.util.Random;
 
 import kafka.javaapi.message.ByteBufferMessageSet;
-import kafka.javaapi.producer.SyncProducer;
+import kafka.javaapi.producer.Producer;
 import kafka.message.Message;
+import kafka.producer.KeyedMessage;
+import kafka.producer.ProducerConfig;
 import kafka.producer.SyncProducerConfig;
 
 import org.apache.hadoop.conf.Configuration;
@@ -363,6 +365,8 @@ public class EtlCounts
     }
   }
 
+
+  @SuppressWarnings("unchecked")
   public void postTrackingCountToKafka(String tier, List<URI> brokerURI)
   {
     KafkaAvroMessageEncoder encoder = new KafkaAvroMessageEncoder();
@@ -404,26 +408,30 @@ public class EtlCounts
     // Shuffle the broker
     Collections.shuffle(brokerURI);
 
-    SyncProducer basicProducer = null;
     for (URI uri : brokerURI)
     {
       Properties props = new Properties();
-      props.put("host", uri.getHost());
-      props.put("port", String.valueOf(uri.getPort()));
+      props.put("broker.list", uri.getHost() + ":" + uri.getPort());
+      // props.put("host", uri.getHost());
+      // props.put("port", String.valueOf(uri.getPort()));
       props.put("buffer.size", String.valueOf(512 * 1024));
+      props.put("type", "sync");
       System.out.println("Host " + uri.getHost() + " port " + props.get("port"));
+      @SuppressWarnings("rawtypes")
+      Producer producer = new Producer(new ProducerConfig(props));
 
       try
       {
-        SyncProducerConfig config = new SyncProducerConfig(props);
-
-        basicProducer = new SyncProducer(config);
 
         System.out.println(topic + " writing " + monitorSet.size()
             + " monitoring counts to kafka " + uri);
-        ByteBufferMessageSet byteBuffer = new ByteBufferMessageSet(monitorSet);
-        basicProducer.send("TrackingMonitoringEvent", byteBuffer);
         System.out.println(topic + " sending tracking to " + uri);
+       KeyedMessage keyedMessage = new KeyedMessage("TrackingMonitoringEvent", monitorSet);
+        /*ProducerData<Integer, Message> pd =
+            new ProducerData<Integer, Message>("TrackingMonitoringEvent",
+                                               null,
+                                               monitorSet);*/
+        producer.send(keyedMessage);
         break;
       }
       catch (Exception e)
@@ -434,9 +442,9 @@ public class EtlCounts
       }
       finally
       {
-        if (basicProducer != null)
+        if (producer != null)
         {
-          basicProducer.close();
+          producer.close();
         }
       }
     }
