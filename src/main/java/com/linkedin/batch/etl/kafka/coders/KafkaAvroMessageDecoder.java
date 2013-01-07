@@ -15,7 +15,6 @@ import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.avro.specific.SpecificRecord;
 
 import com.linkedin.batch.etl.kafka.schemaregistry.CachedSchemaResolver;
-import com.linkedin.batch.etl.kafka.schemaregistry.SchemaRegistryClient;
 
 public class KafkaAvroMessageDecoder
 {

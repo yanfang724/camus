@@ -1,6 +1,7 @@
 package com.linkedin.batch.etl.kafka.mapred;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,7 +33,6 @@ import com.linkedin.batch.etl.kafka.EtlJob;
 import com.linkedin.batch.etl.kafka.common.EtlKey;
 import com.linkedin.batch.etl.kafka.common.EtlRequest;
 import com.linkedin.batch.etl.kafka.common.EtlZkClient;
-import com.linkedin.batch.etl.kafka.schemaregistry.SchemaDetails;
 import com.linkedin.batch.etl.kafka.schemaregistry.SchemaRegistryClient;
 
 /**
@@ -95,8 +95,11 @@ public class EtlInputFormat extends InputFormat<EtlKey, AvroWrapper<Object>>
 
       //Get the class name of the concrete implementation of the Schema Registry and get the concrete class implemented
       
-      String registryType = EtlInputFormat.getSchemaRegistryType(context);
-      SchemaRegistryClient registry = (SchemaRegistryClient)Class.forName(registryType).newInstance(); 
+      Constructor constructor = Class.forName(EtlInputFormat.getSchemaRegistryType(context)).getConstructor(new Class[]{JobContext.class});
+      SchemaRegistryClient registry = (SchemaRegistryClient)constructor.newInstance(context);
+       
+      //String registryType = EtlInputFormat.getSchemaRegistryType(context);
+      //SchemaRegistryClient registry = (SchemaRegistryClient)Class.forName(registryType).newInstance(); 
  
       //SchemaRepository registry = SchemaRegistryClient.getInstance(context);
       requests = new ArrayList<EtlRequest>();
@@ -104,9 +107,9 @@ public class EtlInputFormat extends InputFormat<EtlKey, AvroWrapper<Object>>
       for (String topic : topicList)
       {
         try
-        {	
-          SchemaDetails schemaStr = registry.lookUpLatest(topic);
-          if (!schemaStr.getSchema().startsWith("<html>"))
+        {   
+          String schemaStr = registry.getLatestSchemaByName(topic);
+          if (!schemaStr.startsWith("<html>"))
           {
             EtlJob.startTiming("kafkaSetupTime");
             requests.addAll(zkClient.getKafkaRequest(topic));
