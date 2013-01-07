@@ -1,11 +1,14 @@
 package com.linkedin.batch.etl.kafka.common;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import org.apache.hadoop.mapreduce.JobContext;
 
 import kafka.api.PartitionFetchInfo;
 import kafka.common.ErrorMapping;
@@ -19,6 +22,8 @@ import kafka.javaapi.TopicMetadataResponse;
 import kafka.javaapi.consumer.SimpleConsumer;
 
 import com.linkedin.batch.etl.kafka.EtlJob;
+import com.linkedin.batch.etl.kafka.mapred.EtlInputFormat;
+import com.linkedin.batch.etl.kafka.schemaregistry.SchemaRegistryClient;
 
 /**
  * 
@@ -38,12 +43,10 @@ public class KafkaClient
   public static HashMap<String, List<EtlRequest>> loadKafkaMetadata(List<String> topics) throws IOException
 
   {
-      //A different kafka client can be specified
+      //Host name and the port number need to be specified
     SimpleConsumer consumer =
-        new SimpleConsumer("172.20.72.39", 10251, 30000, 1024 * 1024, null);
+        new SimpleConsumer("host_name", -1, 30000, 1024 * 1024, null);
 
-    // TODO : Hard coded values... modify to read from the configuration
-    // Part of the retry logic
 
     int retries = 3;
     int retryInterval = 1000; // this is in milliseconds
@@ -176,3 +179,4 @@ public class KafkaClient
 //  }
 
 }
+

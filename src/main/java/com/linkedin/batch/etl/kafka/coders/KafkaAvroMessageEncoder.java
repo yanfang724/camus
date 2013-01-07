@@ -16,7 +16,6 @@ import org.apache.avro.specific.SpecificDatumWriter;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.log4j.Logger;
 
-import com.linkedin.batch.etl.kafka.schemaregistry.SchemaDetails;
 import com.linkedin.batch.etl.kafka.schemaregistry.SchemaNotFoundException;
 import com.linkedin.batch.etl.kafka.schemaregistry.SchemaRegistryClient;
 import com.linkedin.batch.etl.kafka.schemaregistry.SchemaRegistryException;
