@@ -130,7 +130,7 @@
   </dependencyManagement>
 
   <modules>
-    <module>camus-api</module>
+    <module>camus-api/mate1-pom.xml</module>
     <module>camus-etl-kafka/mate1-pom.xml</module>
     <module>camus-schema-registry/mate1-pom.xml</module>
     <module>camus-schema-registry-avro/mate1-pom.xml</module>
@@ -169,6 +169,15 @@
       </snapshots>
     </repository>
   </repositories>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>maven.mate1</id>
+      <name>Mate1 Internal Snapshot Repository</name>
+      <!--url>http://maven.mate1:8081/nexus/content/groups/public</url-->
+      <url>http://maven.mate1:8081/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
 
   <build>
     <plugins>
