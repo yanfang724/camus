@@ -9,6 +9,7 @@ It is used at LinkedIn where it processes tens of billions of messages per day.
 
 This is a new open source project, so we don't yet have detailed documentation available and there are still a few LinkedIn-specific items we haven't fixed yet. For early adopters, you can get a basic overview from this [Building LinkedIn’s Real-time Activity Data Pipeline](http://sites.computer.org/debull/A12june/pipeline.pdf "Building LinkedIn’s Real-time Activity Data Pipeline"). There is also a google group for discussion that you can email at camus_etl@googlegroups.com, <camus_etl@googlegroups.com> or you can search the [archives](https://groups.google.com/forum/#!forum/camus_etl "Camus Archives"). If you are interested please ask any questions on that mailing list.
 
+For a more detailed documentation on the main Camus components, please see [Camus InputFormat and OutputFormat Behavior](https://github.com/linkedin/camus/wiki/Camus-InputFormat-and-OutputFormat-Behavior "Camus InputFormat and OutputFormat Behavior")
 # Brief Overview
 All work is done within a single Hadoop job divided into three stages:
 
@@ -94,10 +95,10 @@ Here is an abbreviated list of commonly used parameters.
  * kafka.max.pull.hrs=1
 * Events with a timestamp older than this will be discarded. 
  * kafka.max.historical.days=3
-* Max bytes pull for a topic-partition in a single run
- * kafka.max.pull.megabytes.per.topic=4096
+* Max minutes for each mapper to pull messages
+ * kafka.max.pull.minutes.per.task=-1
 * Decoder class for Kafka Messages to Avro Records
- * kafka.message.decoder.class=
+ * camus.message.decoder.class=
 * If whitelist has values, only whitelisted topic are pulled.  Nothing on the blacklist is pulled
  * kafka.blacklist.topics=
  * kafka.whitelist.topics=
