@@ -54,7 +54,7 @@
     <dependency>
       <groupId>com.edate</groupId>
       <artifactId>edate-database-full</artifactId>
-      <version>14.0</version>
+      <version>14.0-SNAPSHOT</version>
       <type>jar</type>
     </dependency>
     
