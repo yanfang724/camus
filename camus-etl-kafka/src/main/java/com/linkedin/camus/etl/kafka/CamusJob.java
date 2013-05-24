@@ -71,8 +71,9 @@ public class CamusJob extends Configured implements Tool {
     public static final String KAFKA_MONITOR_TIER = "kafka.monitor.tier";
     public static final String CAMUS_MESSAGE_ENCODER_CLASS = "camus.message.encoder.class";
     public static final String BROKER_URI_FILE = "brokers.uri";
-
-    private final Properties props;
+    public static final String POST_TRACKING_COUNTS_TO_KAFKA = "post.tracking.counts.to.kafka";
+   
+ private final Properties props;
 
     public CamusJob() {
         this.props = new Properties();
@@ -139,6 +140,9 @@ public class CamusJob extends Configured implements Tool {
         Job job = new Job(getConf());
         job.setJarByClass(CamusJob.class);
         job.setJobName("Camus Job");
+
+        // Set the default partitioner
+        job.getConfiguration().set(EtlMultiOutputFormat.ETL_DEFAULT_PARTITIONER_CLASS, "com.linkedin.camus.etl.kafka.coders.DefaultPartitioner");
 
         for (Object key : props.keySet()) {
             job.getConfiguration().set(key.toString(), props.getProperty(key.toString()));
@@ -317,10 +321,12 @@ public class CamusJob extends Configured implements Tool {
             }
 
             writeBrokers(fs, job, brokerURI);
-
-            for (EtlCounts count : countsMap.values()) {
-                count.postTrackingCountToKafka(props.getProperty(KAFKA_MONITOR_TIER), brokerURI);
+	    if(getPostTrackingCountsToKafka(job)) {
+            	for (EtlCounts count : countsMap.values()) {
+            		count.postTrackingCountToKafka(props.getProperty(KAFKA_MONITOR_TIER), brokerURI);
+           	 }
             }
+
         }
 
         // echo any errors in the error files. hopefully there are none
@@ -544,5 +550,9 @@ public class CamusJob extends Configured implements Tool {
 
         run();
         return 0;
+    }
+
+    public static boolean getPostTrackingCountsToKafka(Job job){
+    	return job.getConfiguration().getBoolean(POST_TRACKING_COUNTS_TO_KAFKA, true);
     }
 }
