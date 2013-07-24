@@ -105,10 +105,18 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>kafka</groupId>
+        <!--groupId>kafka</groupId-->
+        <groupId>org.apache.kafka</groupId>
         <artifactId>kafka</artifactId>
         <!--version>0.7.2</version-->
-        <version>0.7.0</version>
+        <!--version>0.7.0</version-->
+        <version>0.7.0-scala2.9.1-1</version>
+        <!--exclusions>
+          <exclusion>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+          </exclusion>
+        </exclusions-->
       </dependency>
       <dependency>
         <groupId>com.github.sgroschupf</groupId>
@@ -125,6 +133,11 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.8.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.scala-lang</groupId>
+        <artifactId>scala-library</artifactId>
+        <version>2.9.1-1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -198,7 +211,7 @@
         <version>2.3.1</version>
         <inherited>false</inherited>
         <executions>
-          <execution>
+          <!--execution>
             <id>install-kafka</id>
             <phase>validate</phase>
             <goals>
@@ -210,9 +223,9 @@
               <version>0.7.2</version>
               <packaging>jar</packaging>
               <file>${basedir}/lib/kafka-0.7.2.jar</file>
-              <pomFile>${basedir}/lib/kafka-0.7.2.xml</pomFile>
+              <pomFile>${basedir}/lib/mate1-kafka-0.7.2.xml</pomFile>
             </configuration>
-          </execution>
+          </execution-->
           <execution>
             <id>install-avro-repo-client</id>
             <phase>validate</phase>

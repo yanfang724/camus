@@ -1,1 +1,13 @@
-java -cp camus-mate1-job/target/camus-mate1-job-0.1.0-SNAPSHOT-shaded.jar:/etc/hadoop/conf:/usr/lib/hadoop-hdfs/hadoop-hdfs.jar:log4j.properties com.linkedin.camus.etl.kafka.CamusJob -P camus.properties
+#!/bin/bash
+
+if [[ ! ( $# == 1 ) ]]; then
+  echo "Usage: $0 properties_file"
+  echo ""
+
+  exit 1
+fi;
+
+export properties_file=$1
+
+
+java -cp camus-mate1-job/target/camus-mate1-job-0.1.0-SNAPSHOT-shaded.jar:/etc/hadoop/conf:/usr/lib/hadoop-hdfs/hadoop-hdfs.jar:log4j.properties com.linkedin.camus.etl.kafka.CamusJob -P $properties_file

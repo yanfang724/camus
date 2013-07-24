@@ -42,8 +42,15 @@
       <artifactId>hadoop-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>kafka</groupId>
+      <!--groupId>kafka</groupId-->
+      <groupId>org.apache.kafka</groupId>
       <artifactId>kafka</artifactId>
+      <!--exclusions>
+	<exclusion>
+	  <groupId>org.scala-lang</groupId>
+	  <artifactId>scala-library</artifactId>
+	</exclusion>
+      </exclusions-->
     </dependency>
     <dependency>
       <groupId>com.github.sgroschupf</groupId>
@@ -63,6 +70,10 @@
         </exclusion>
       </exclusions>
     </dependency>
+      <dependency>
+        <groupId>org.scala-lang</groupId>
+        <artifactId>scala-library</artifactId>
+      </dependency>
   </dependencies>
 
   <build>
