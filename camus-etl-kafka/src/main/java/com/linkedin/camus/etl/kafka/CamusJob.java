@@ -333,19 +333,19 @@ public class CamusJob extends Configured implements Tool {
         // TODO: we might want to add an option that throws an exception if
         // there
         // any errors recorded in these files, if the option is enabled
-        for (FileStatus f : fs.listStatus(newExecutionOutput, new PrefixFilter(
-                EtlMultiOutputFormat.ERRORS_PREFIX))) {
-            SequenceFile.Reader reader = new SequenceFile.Reader(fs, f.getPath(), fs.getConf());
-
-            EtlKey key = new EtlKey();
-            ExceptionWritable value = new ExceptionWritable();
-
-            while (reader.next(key, value)) {
-                System.err.println(key.toString());
-                System.err.println(value.toString());
-            }
-            reader.close();
-        }
+//        for (FileStatus f : fs.listStatus(newExecutionOutput, new PrefixFilter(
+//                EtlMultiOutputFormat.ERRORS_PREFIX))) {
+//            SequenceFile.Reader reader = new SequenceFile.Reader(fs, f.getPath(), fs.getConf());
+//
+//            EtlKey key = new EtlKey();
+//            ExceptionWritable value = new ExceptionWritable();
+//
+//            while (reader.next(key, value)) {
+//                System.err.println(key.toString());
+//                System.err.println(value.toString());
+//            }
+//            reader.close();
+//        }
 
         // committing this job to the history directory. below we check if the
         // job failed,

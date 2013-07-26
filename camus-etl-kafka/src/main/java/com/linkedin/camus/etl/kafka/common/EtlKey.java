@@ -165,13 +165,13 @@ public class EtlKey implements WritableComparable<EtlKey>, IEtlKey {
 		this.time = in.readLong();
 		this.server = in.readUTF(); // left for legacy
 		this.service = in.readUTF(); // left for legacy
-        this.partitionMap = new MapWritable();
-        try {
-            this.partitionMap.readFields(in);
-        } catch (IOException e) {
+        //this.partitionMap = new MapWritable();
+        //try {
+            //this.partitionMap.readFields(in);
+        //} catch (IOException e) {
             this.setServer(this.server);
             this.setService(this.service);
-        }
+        //}
     }
 
 	@Override
