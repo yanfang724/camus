@@ -6,10 +6,9 @@
     <groupId>com.linkedin.camus</groupId>
     <artifactId>camus-parent</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <relativePath>.../mate1-pom.xml</relativePath>
   </parent>
 
-  <artifactId>camus-schema-registry-avro</artifactId>
+  <artifactId>camus-schema-registry</artifactId>
   <name>Camus schema registry.</name>
   <packaging>jar</packaging>
 
@@ -27,10 +26,6 @@
       <artifactId>hadoop-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-common</artifactId>
-    </dependency>
-    <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
     </dependency>
@@ -41,17 +36,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.linkedin.camus</groupId>
-      <artifactId>camus-schema-registry</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.linkedin.camus</groupId>
-      <artifactId>camus-schema-registry</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

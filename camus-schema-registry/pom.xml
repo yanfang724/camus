@@ -6,6 +6,7 @@
     <groupId>com.linkedin.camus</groupId>
     <artifactId>camus-parent</artifactId>
     <version>0.1.0-SNAPSHOT</version>
+    <relativePath>.../pom.xml</relativePath>
   </parent>
 
   <artifactId>camus-schema-registry</artifactId>
@@ -37,6 +38,13 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <!-- Because I use CDH4 and the hadoop Configuration is now located in hadoop-common rather than hadoop-core -->
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-common</artifactId>
+      <version>0.22.0</version>
     </dependency>
   </dependencies>
 </project>

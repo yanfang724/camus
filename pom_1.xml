@@ -11,14 +11,13 @@
   <artifactId>camus-parent</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Camus Parent (with Mate1 dependencies)</name>
+  <name>Camus Parent</name>
   <description>
     Camus is LinkedIn's Kafka->HDFS pipeline. It is a mapreduce job that does distributed data loads out of Kafka.
   </description>
   <url>https://github.com/linkedin/camus</url>
 
   <properties>
-    <!-- maven specific properties -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -54,18 +53,15 @@
       <dependency>
         <groupId>org.apache.avro</groupId>
         <artifactId>avro</artifactId>
-        <!--version>1.7.3</version-->
-        <version>1.6.1</version>
+        <version>1.7.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.avro</groupId>
         <artifactId>avro-mapred</artifactId>
-        <!--version>1.7.3</version-->
-        <version>1.6.1</version>
+        <version>1.7.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.avro</groupId>
-        <!--version>1.7.4-SNAPSHOT</version-->
         <version>1.7.4-SNAPSHOT</version>
         <artifactId>avro-repo-bundle</artifactId>
       </dependency>
@@ -77,44 +73,13 @@
       <dependency>
         <groupId>org.apache.hadoop</groupId>
         <artifactId>hadoop-core</artifactId>
-        <!--version>1.0.3</version-->
-        <version>2.0.0-mr1-cdh4.2.0</version>
-        <exclusions>
-          <exclusion>
-            <!-- Because it pulls version 1.5.2 otherwise, and I'd rather let avro manage that dependency -->
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-          </exclusion>
-        </exclusions>
+        <!-- <version>1.0.3</version> -->
+         <version>2.0.0-mr1-cdh4.2.0</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.hadoop</groupId>
-        <artifactId>hadoop-common</artifactId>
-        <version>2.0.0-cdh4.2.0</version>
-        <exclusions>
-          <exclusion>
-            <!-- Because it pulls version 1.8.8 otherwise, and I'd rather let avro manage that dependency -->
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-          </exclusion>
-          <exclusion>
-            <!--  -->
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <!--groupId>kafka</groupId-->
-        <groupId>org.apache.kafka</groupId>
+        <groupId>kafka</groupId>
         <artifactId>kafka</artifactId>
-        <version>kafka_2.9.2-0.7.0</version>
-        <!--exclusions>
-          <exclusion>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-          </exclusion>
-        </exclusions-->
+        <version>0.7.2</version>
       </dependency>
       <dependency>
         <groupId>com.github.sgroschupf</groupId>
@@ -124,28 +89,22 @@
       <dependency>
         <groupId>org.apache.zookeeper</groupId>
         <artifactId>zookeeper</artifactId>
-        <!--version>3.3.4</version-->
-        <version>3.4.5-cdh4.2.1</version>
+        <version>3.3.4</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.8.1</version>
       </dependency>
-      <dependency>
-        <groupId>org.scala-lang</groupId>
-        <artifactId>scala-library</artifactId>
-        <version>2.9.1-1</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <modules>
     <module>camus-api</module>
-    <module>camus-etl-kafka/pom.xml</module>
-    <module>camus-schema-registry/pom.xml</module>
-    <module>camus-schema-registry-avro/pom.xml</module>
-    <module>camus-mate1-job/mate1-pom.xml</module>
+    <module>camus-etl-kafka</module>
+    <module>camus-schema-registry</module>
+    <module>camus-schema-registry-avro</module>
+    <module>camus-example</module>
   </modules>
 
   <licenses>
@@ -172,23 +131,7 @@
       <id>apache-releases</id>
       <url>https://repository.apache.org/content/groups/public</url>
     </repository>
-    <repository>
-      <id>cloudera-cdh4</id>
-      <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
   </repositories>
-
-  <distributionManagement>
-    <snapshotRepository>
-      <id>maven.mate1</id>
-      <name>Mate1 Internal Snapshot Repository</name>
-      <!--url>http://maven.mate1:8081/nexus/content/groups/public</url-->
-      <url>http://maven.mate1:8081/nexus/content/repositories/snapshots/</url>
-    </snapshotRepository>
-  </distributionManagement>
 
   <build>
     <plugins>
@@ -209,7 +152,7 @@
         <version>2.3.1</version>
         <inherited>false</inherited>
         <executions>
-          <!--execution>
+          <execution>
             <id>install-kafka</id>
             <phase>validate</phase>
             <goals>
@@ -221,9 +164,9 @@
               <version>0.7.2</version>
               <packaging>jar</packaging>
               <file>${basedir}/lib/kafka-0.7.2.jar</file>
-              <pomFile>${basedir}/lib/mate1-kafka-0.7.2.xml</pomFile>
+              <pomFile>${basedir}/lib/kafka-0.7.2.xml</pomFile>
             </configuration>
-          </execution-->
+          </execution>
           <execution>
             <id>install-avro-repo-client</id>
             <phase>validate</phase>
