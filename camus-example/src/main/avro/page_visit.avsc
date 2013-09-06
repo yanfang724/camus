@@ -1,0 +1,10 @@
+{
+    "namespace": "com.linkedin.camus.example.records",
+    "name": "page_visit",
+    "type": "record",
+    "fields": [
+        {"name": "timestamp", "type":["string","null"] },
+        {"name": "website", "type": ["string", "null"]},
+        {"name": "ip", "type": ["string", "null"]}
+    ]
+}
